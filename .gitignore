@@ -1,0 +1,11 @@
+# dist files
+dist/
+
+# DS_store
+.DS_Store
+
+# *.cpython*
+*.pyc
+
+# egg info
+*.egg-info
