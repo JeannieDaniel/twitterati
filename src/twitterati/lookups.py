@@ -62,7 +62,7 @@ def tweet_lookup(tweet_id, timeout=2) -> dict:
     return requests.request("GET", url, headers=headers, params=params).json()
 
 
-def get_user_profile(user_id, update = False):
+def get_user_profile(user_id, update = False, timeout=6):
     url = "https://api.twitter.com/2/users/{}".format(user_id)    
     params = query_params.get_user_query_params()
     response = requests.request("GET", url, headers=headers, params = params).json()
