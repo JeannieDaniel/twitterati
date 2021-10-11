@@ -1,6 +1,5 @@
-import json
-import os
 import time
+import os
 
 import requests
 from twitterati import query_params
@@ -23,18 +22,17 @@ def count_recent_tweets(search_query, granularity='day', start_time=None, end_ti
     return requests.request("GET", url, headers=headers, params=params).json()
 
 
-def recent_search_lookup(search_query, max_count = 5000) -> dict:
+def recent_search_lookup(search_query, period, max_count = 5000) -> dict:
     url = "https://api.twitter.com/2/tweets/search/recent"
-    params = query_params.get_recent_search_query_params(search_query)
+    params = query_params.get_recent_search_query_params(search_query, period)
     all_responses = []
     response = requests.request("GET", url, headers=headers, params = params).json()
     all_responses.extend(response['data'])
-    time.sleep(2)
+    
     while 'next_token' in response['meta'] and len(all_responses) < max_count:
         params['next_token'] = response['meta']['next_token']
         response = requests.request("GET", url, headers=headers, params = params).json()
         all_responses.extend(response['data'])
-        time.sleep(2)
     return all_responses
 
 def conversation_lookup(conversation_id, timeout=2) -> dict:
