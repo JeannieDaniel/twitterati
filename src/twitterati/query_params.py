@@ -37,7 +37,6 @@ def get_recent_search_query_params(search_query, period, max_results=100):
                             'expansions': 'author_id',
                             'max_results': max_results,
                             'start_time' : start_time,
-                            'lang':'en'
                         }
 
         return query_params

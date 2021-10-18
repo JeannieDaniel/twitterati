@@ -2,13 +2,28 @@ import time
 import os
 
 import requests
-from twitterati import query_params
+import query_params
 import dateutil.parser as parser
+from dotenv import load_dotenv
+
+load_dotenv()
 
 bearer_token = os.environ.get('BEARER_TOKEN')
 headers = {"Authorization": "Bearer {}".format(bearer_token)}
 
 def count_recent_tweets(search_query, granularity='day', start_time=None, end_time=None) -> dict:
+    """Count the number of tweets that match a seatch term over the past 7 days.
+
+    Args:
+        search_query (str): A string defining your search query. (See https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction 
+            for a tutorial on seach queries.)
+        granularity (str, optional): Time granularity of your query. Defaults to 'day'.
+        start_time ([type], optional): [description]. Defaults to None.
+        end_time ([type], optional): [description]. Defaults to None.
+
+    Returns:
+        dict: [description]
+    """
     url = "https://api.twitter.com/2/tweets/counts/recent"
     if start_time:
        start_time = parser.parse(start_time).isoformat()
@@ -23,16 +38,29 @@ def count_recent_tweets(search_query, granularity='day', start_time=None, end_ti
 
 
 def recent_search_lookup(search_query, period, max_count = 5000) -> dict:
+    """A function that returns tweets and tweet metadata from supplying the 
+    Twitter APIv2 with a search query.
+
+    Args:
+        search_query (str): A string defining your search query. (See https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction 
+            for a tutorial on seach queries.)
+        period (int): Number of previous days to return tweets and metadata for (maximum is 6 days)
+        max_count (int, optional): Maximum number of tweets. Defaults to 5000.
+
+    Returns:
+        dict: A dictionary containing tweets and their metadata returned by the Twitter APIv2.
+    """
     url = "https://api.twitter.com/2/tweets/search/recent"
     params = query_params.get_recent_search_query_params(search_query, period)
     all_responses = []
     response = requests.request("GET", url, headers=headers, params = params).json()
     all_responses.extend(response['data'])
-    
+
     while 'next_token' in response['meta'] and len(all_responses) < max_count:
         params['next_token'] = response['meta']['next_token']
         response = requests.request("GET", url, headers=headers, params = params).json()
         all_responses.extend(response['data'])
+
     return all_responses
 
 def conversation_lookup(conversation_id, timeout=2) -> dict:

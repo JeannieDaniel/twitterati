@@ -9,3 +9,8 @@ dist/
 
 # egg info
 *.egg-info
+
+# Env variables
+.env
+
+tests.py
