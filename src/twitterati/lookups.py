@@ -1,9 +1,9 @@
+from datetime import datetime
 import time
 import os
-
+import pytz
 import requests
 import query_params
-import dateutil.parser as parser
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,23 +12,29 @@ bearer_token = os.environ.get('BEARER_TOKEN')
 headers = {"Authorization": "Bearer {}".format(bearer_token)}
 
 def count_recent_tweets(search_query, granularity='day', start_time=None, end_time=None) -> dict:
-    """Count the number of tweets that match a seatch term over the past 7 days.
+    """Count the number of tweets that match a search term by 'granularity' in the time window defined by start_time and end_time. 
+    If either start_time or end_time is not supplied (or both are not supplied), the earliest possible date (7 days prior to day)
+    is used for start_time and the latest possible date (today) is used for end_time.
 
     Args:
         search_query (str): A string defining your search query. (See https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction 
             for a tutorial on seach queries.)
         granularity (str, optional): Time granularity of your query. Defaults to 'day'.
-        start_time ([type], optional): [description]. Defaults to None.
-        end_time ([type], optional): [description]. Defaults to None.
+        start_time (str optional): Start time for tweet query. Must be a string in the format: %d/%m/%Y. Defaults to None.
+        end_time (str, optional): End time for tweet query. Must be a string in the format: %d/%m/%Y. Defaults to None.
 
     Returns:
-        dict: [description]
+        dict: Dictionary that contains counts of tweets per day in the time window defined by start_time and end_time.
+              
     """
     url = "https://api.twitter.com/2/tweets/counts/recent"
     if start_time:
-       start_time = parser.parse(start_time).isoformat()
+       start_time = datetime.strptime(start_time, '%d/%m/%Y')
+       start_time = start_time.replace(tzinfo=pytz.UTC).isoformat()
+
     if end_time:
-        end_time = parser.parse(end_time).isoformat()
+        end_time = datetime.strptime(end_time, '%d/%m/%Y')
+        end_time = end_time.replace(tzinfo=pytz.UTC).isoformat()
 
     params = {'query': search_query,
               'granularity': granularity,
