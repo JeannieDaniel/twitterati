@@ -12,7 +12,7 @@ bearer_token = os.environ.get('BEARER_TOKEN')
 headers = {"Authorization": "Bearer {}".format(bearer_token)}
 
 def count_recent_tweets(search_query, granularity='day', start_time=None, end_time=None) -> dict:
-    """Count the number of tweets that match a search term by 'granularity' in the time window defined by start_time and end_time. 
+    """Count the number of tweets that match a search term by [granularity] ('day' is the defualt) in the time window defined by start_time and end_time. 
     If either start_time or end_time is not supplied (or both are not supplied), the earliest possible date (7 days prior to day)
     is used for start_time and the latest possible date (today) is used for end_time.
 
@@ -24,7 +24,7 @@ def count_recent_tweets(search_query, granularity='day', start_time=None, end_ti
         end_time (str, optional): End time for tweet query. Must be a string in the format: %d/%m/%Y. Defaults to None.
 
     Returns:
-        dict: Dictionary that contains counts of tweets per day in the time window defined by start_time and end_time.
+        dict: Dictionary that contains counts of tweets per [granularity] in the time window defined by start_time and end_time.
               
     """
     url = "https://api.twitter.com/2/tweets/counts/recent"
