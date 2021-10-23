@@ -17,7 +17,6 @@ This package serves as a wrapper for Twitter API V2 Early Access, for more info:
 - User lookup by User ID
 - Follows lookup by User ID
 
-
 # Before you get started:
 
 Be sure to familiarize yourself with the terms and conditions of the Twitter Developer API: https://developer.twitter.com/en/developer-terms/agreement-and-policy. 
@@ -49,7 +48,7 @@ export BEARER_TOKEN='XXXXXXXXXXX'
 
 from twitterati import lookups
 
-user = lookups.get_user(user_id)
+user = lookups.get_user_profile(user_id)
 
 ```
 
@@ -85,6 +84,6 @@ counts = lookups.count_recent_tweets('python')
 
 from twitterati import lookups
 
-convo = lookups.get_conversation(conversation_id)
+convo = lookups.conversation_lookup(conversation_id)
 
 ```
