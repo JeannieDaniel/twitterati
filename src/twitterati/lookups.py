@@ -1,12 +1,8 @@
 from datetime import datetime
-import time
 import os
 import pytz
 import requests
 import query_params
-from dotenv import load_dotenv
-
-load_dotenv()
 
 bearer_token = os.environ.get('BEARER_TOKEN')
 headers = {"Authorization": "Bearer {}".format(bearer_token)}
@@ -69,11 +65,10 @@ def recent_search_lookup(search_query, period, max_count = 5000) -> dict:
 
     return all_responses
 
-def conversation_lookup(conversation_id, timeout=2) -> dict:
+def conversation_lookup(conversation_id) -> dict:
     params = query_params.get_conversation_query_params(conversation_id)
     url = 'https://api.twitter.com/2/tweets/search/recent'
     results = requests.request("GET", url, headers=headers, params=params).json()
-    time.sleep(timeout)
     if results['meta']['result_count'] == 0:
         return
     new_results = results.copy()
@@ -84,13 +79,11 @@ def conversation_lookup(conversation_id, timeout=2) -> dict:
         results['includes']['users'].extend(new_results['includes']['users'])
         if 'tweets' in new_results['includes']:
             results['includes']['tweets'].extend(new_results['includes']['tweets'])
-        time.sleep(timeout)
     return results
 
-def tweet_lookup(tweet_id, timeout=2) -> dict:
+def tweet_lookup(tweet_id) -> dict:
     url = 'https://api.twitter.com/2/tweets/{}'.format(tweet_id)
     params = query_params.get_tweet_query_params()
-    time.sleep(timeout)
     return requests.request("GET", url, headers=headers, params=params).json()
 
 
@@ -108,13 +101,11 @@ def followers_lookup(user_id):
     all_responses = []
     response = requests.request("GET", url, headers=headers, params = params).json()
     all_responses.append(response)
-    time.sleep(60)
     while 'next_token' in response['meta']:
         next_token = response['meta']['next_token']
         query_params['pagination_token'] = next_token
         response = requests.request("GET", url, headers=headers, params = params).json()
         all_responses.append(response)
-        time.sleep(60)
 
     return all_responses
 
